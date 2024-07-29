@@ -16,10 +16,11 @@ window.color = color.black
 # in ursina, positive x is right, positive y is up, and positive z is forward.
 
 player = Entity(model='quad', color=color.white, texture='triangle')
-
+player.origin_y = -0.25
 # create a function called 'update'.
 # this will automatically get called by the engine every frame.
 speed = 8.5 # This is pixels per second 
+angular_speed = 180 # degrees per second
 def update():
     distance = speed * time.dt
 
@@ -35,6 +36,13 @@ def update():
     if held_keys['s'] == True:
         player.y -= distance
 
+    rotation = angular_speed * time.dt
+
+    if held_keys['j'] == True:
+        player.rotation_z -= rotation
+    
+    if held_keys['k'] == True:
+        player.rotation_z += rotation
 # this part will make the player move left or right based on our input.
 # to check which keys are held down, we can check the held_keys dictionary.
 # 0 means not pressed and 1 means pressed.
