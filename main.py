@@ -19,10 +19,21 @@ player = Entity(model='quad', color=color.white, texture='triangle')
 
 # create a function called 'update'.
 # this will automatically get called by the engine every frame.
-
+speed = 8.5 # This is pixels per second 
 def update():
-    player.x += held_keys['d'] * time.dt
-    player.x -= held_keys['a'] * time.dt
+    distance = speed * time.dt
+
+    if held_keys['d'] == True:
+        player.x += distance
+
+    if held_keys['a'] == True:
+        player.x -= distance
+    
+    if held_keys['w'] == True:
+        player.y += distance
+    
+    if held_keys['s'] == True:
+        player.y -= distance
 
 # this part will make the player move left or right based on our input.
 # to check which keys are held down, we can check the held_keys dictionary.
