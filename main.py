@@ -1,43 +1,90 @@
-from ursina import *
+import pygame
 
-# create a window
-app = Ursina()
+import math
 
-window.color = color.black
+# pygame setup
+pygame.init()
+screen = pygame.display.set_mode((1280, 720))
+clock = pygame.time.Clock()
+running = True
+dt = 0
 
-# most things in ursina are Entities. An Entity is a thing you place in the world.
-# you can think of them as GameObjects in Unity or Actors in Unreal.
-# the first parameter tells us the Entity's model will be a 3d-model called 'cube'.
-# ursina includes some basic models like 'cube', 'sphere' and 'quad'.
+player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+# rotation = 0
 
-# the next parameter tells us the model's color should be orange.
+while running:
+    # poll for events
+    # pygame.QUIT event means the user clicked X to close your window
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-# 'scale_y=2' tells us how big the entity should be in the vertical axis, how tall it should be.
-# in ursina, positive x is right, positive y is up, and positive z is forward.
-
-player = Entity(model='quad', color=color.white, texture='triangle')
-
-# create a function called 'update'.
-# this will automatically get called by the engine every frame.
-
-def update():
-    player.x += held_keys['d'] * time.dt
-    player.x -= held_keys['a'] * time.dt
-
-# this part will make the player move left or right based on our input.
-# to check which keys are held down, we can check the held_keys dictionary.
-# 0 means not pressed and 1 means pressed.
-# time.dt is simply the time since the last frame. by multiplying with this, the
-# player will move at the same speed regardless of how fast the game runs.
+    # fill the screen with a color to wipe away anything from last frame
+    screen.fill(pygame.Color(0, 0, 125, 100))
 
 
-def input(key):
-    if key == 'space':
-        player.y += 1
-        invoke(setattr, player, 'y', player.y-1, delay=.25)
+    # print(player_pos + (10, 10), player_pos + (20, 20))
 
+    SIDE_LENGTH: float = 20
+    SIDE_COUNT: int = 3
+    
+    rads_per_vertice: float = math.tau / SIDE_COUNT
 
-# start running the game
-app.run()
+    rads: float = rads_per_vertice * 0
+    point1 = (math.cos(rads) * SIDE_LENGTH, math.sin(rads) * SIDE_LENGTH)
 
+    rads = rads_per_vertice * 1
+    point2 = (math.cos(rads) * SIDE_LENGTH, math.sin(rads) * SIDE_LENGTH)
 
+    rads = rads_per_vertice * 2
+    point3 = (math.cos(rads) * SIDE_LENGTH, math.sin(rads) * SIDE_LENGTH)
+
+    # mag = math.sqrt((point1[0] ** 2) + (point1[1] ** 2))
+
+    player_to_mouse_vec = pygame.mouse.get_pos() - player_pos
+    # player_mouse_mag = math.sqrt(player_to_mouse_vec[0] ** 2 + player_to_mouse_vec[1] ** 2)
+    player_to_mouse_dir = (player_to_mouse_vec[0], player_to_mouse_vec[1])
+
+    # ANGULAR_SPEED = math.tau # Rotations per second
+    # rotation += ANGULAR_SPEED * dt
+
+    rotation = math.atan2(player_to_mouse_dir[1], player_to_mouse_dir[0])
+
+    angle1 = math.atan2(point1[1], point1[0])
+    rotated1 = (math.cos(angle1 + rotation) * SIDE_LENGTH, math.sin(angle1 + rotation) * SIDE_LENGTH)
+
+    angle2 = math.atan2(point2[1], point2[0])
+    rotated2 = (math.cos(angle2 + rotation) * SIDE_LENGTH, math.sin(angle2 + rotation) * SIDE_LENGTH)
+
+    angle3 = math.atan2(point3[1], point3[0])
+    rotated3 = (math.cos(angle3 + rotation) * SIDE_LENGTH, math.sin(angle3 + rotation) * SIDE_LENGTH)
+
+    # pygame.draw.polygon(screen, "red", (player_pos + point1, player_pos + point2, player_pos + point3))
+    pygame.draw.polygon(screen, "red", (player_pos + rotated1, player_pos + rotated2, player_pos + rotated3))
+
+    pygame.draw.circle(screen, "black", player_pos + rotated1, 5)
+
+    SPEED: int = 400 # pixels per second
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_w]:
+        player_pos.y -= SPEED * dt
+    
+    if keys[pygame.K_s]:
+        player_pos.y += SPEED * dt
+    
+    if keys[pygame.K_a]:
+        player_pos.x -= SPEED * dt
+    
+    if keys[pygame.K_d]:
+        player_pos.x += SPEED * dt
+
+    # flip() the display to put your work on screen
+    pygame.display.flip()
+
+    # limits FPS to 60
+    # dt is delta time in seconds since last frame, used for framerate-
+    # independent physics.
+    dt = clock.tick(60) / 1000
+
+pygame.quit()
