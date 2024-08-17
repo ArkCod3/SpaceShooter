@@ -46,3 +46,6 @@ If activation is successful you should see **(env)** at the beginning of your co
 * Deactivate (exit) the virtual enviroment by running ```deactivate``` on the command-line
 * To reset the virtual enviroment simply delete the directory that contains the virtual enviroment and perform setup again.
    * Keep in mind that the environment will need to re-install dependencies everytime you do this.
+
+## How to use Pygame?
+* <a href="https://www.pygame.org/docs/">Pygame documentation</a>
