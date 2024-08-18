@@ -10,7 +10,11 @@ clock = pygame.time.Clock()
 running = True
 dt = 0  #in seconds
 
+was_pressed: bool = False
+bullet_exists: bool = False
 player_pos: pygame.Vector2 = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+bullet_pos: pygame.Vector2 = player_pos.copy()
+bullet_dir: pygame.Vector2 = (0,0)
 
 while running:
     for event in pygame.event.get():
@@ -49,6 +53,24 @@ while running:
     if keys[pygame.K_d]:
         player_pos.x += SPEED * dt
 
+    
+    buttons = pygame.mouse.get_pressed()
+    is_pressed: bool = buttons[0]
+    if is_pressed and (is_pressed != was_pressed):
+        bullet_exists = True
+        bullet_pos = player_pos.copy()
+        bullet_dir = player_mouse_dir.copy()
+
+    if bullet_exists:
+        BULLET_RADIUS: float = PLAYER_RADIUS / 5.0
+        BULLET_COLOR: pygame.Color = pygame.Color(0, 255, 0)
+        pygame.draw.circle(screen, BULLET_COLOR, bullet_pos, BULLET_RADIUS)
+        
+        BULLET_SPEED: float = 400
+        bullet_pos = bullet_pos + (bullet_dir * BULLET_SPEED * dt)
+    
+
+    was_pressed = is_pressed
     # flip() the display to put your work on screen
     pygame.display.flip()
 
